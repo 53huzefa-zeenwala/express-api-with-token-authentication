@@ -8,6 +8,7 @@ const {
   verifyRefreshToken,
 } = require("../helpers/jwt_helper");
 const redisClient = require("../helpers/init_redis");
+const { success } = require("../helpers/responseApi");
 
 const register = async (req, res, next) => {
   try {
@@ -21,7 +22,7 @@ const register = async (req, res, next) => {
 
     await user.save();
 
-    res.status(201).send({ message: "User has been created" });
+    res.status(201).send(success("User has been created", user, 201));
   } catch (error) {
     if (error.isJoi == true) error.status = 422;
     next(error);
@@ -46,7 +47,7 @@ const login = async (req, res, next) => {
     );
     const refreshToken = await signRefreshToken(user._id.toString());
 
-    res.send({ accessToken, refreshToken, expiresIn });
+    res.send(success("Logged in successfully", { accessToken, refreshToken, expiresIn }, 200));
   } catch (error) {
     if (error.isJoi === true)
       return next(createError.BadRequest("Invalid Username or Password"));
@@ -90,7 +91,7 @@ const logout = async (req, res, next) => {
       throw createError.InternalServerError();
     });
 
-    res.sendStatus(204);
+    res.status(204).send(success("Logout successfully", null, 204));
   } catch (error) {
     next(error);
   }
@@ -106,7 +107,7 @@ const update = async (req, res, next) => {
       role: result.role,
     });
 
-    res.send({ message: "User has been updated" });
+    res.send(success("User has been updated", null, 200));
   } catch (error) {
     if (error.isJoi == true) error.status = 422;
     next(error);

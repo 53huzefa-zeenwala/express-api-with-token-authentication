@@ -9,7 +9,7 @@ const add = async (req, res, next) => {
 
     const savedOrder = await order.save();
 
-    res.json(savedOrder);
+    res.status(201).json(success("Order has been created", savedOrder, 201));
   } catch (error) {
     if (error.isJoi == true) error.status = 422;
 
@@ -20,7 +20,7 @@ const add = async (req, res, next) => {
 const getAll = async (req, res, next) => {
     try {
         const orders = await Order.find();
-        res.json(orders)
+        res.status(200).json(success("Success", orders, 200));
     } catch (error) {
      next(error)   
     }

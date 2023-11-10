@@ -10,7 +10,7 @@ const add = async (req, res, next) => {
 
     const savedProduct = await product.save();
 
-    res.json(savedProduct);
+    res.status(201).json(success("Product is added", savedProduct, 201));
   } catch (error) {
     if (error.isJoi == true) error.status = 422;
     next(error);
@@ -38,7 +38,7 @@ const getAll = async (req, res, next) => {
         .limit(4)
         .skip(query.page * 4);
     }
-    res.json(products);
+    res.status(200).json(success("Success", products, 200));
   } catch (error) {
     next(error);
   }

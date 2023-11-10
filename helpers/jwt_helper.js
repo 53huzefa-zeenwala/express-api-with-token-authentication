@@ -6,7 +6,7 @@ const redisClient = require("../helpers/init_redis");
 module.exports = {
   signAccessToken: (userId, role) => {
     return new Promise((resolve, reject) => {
-      const accessTokenExpTime = "1m"; //* m == minute change m also require in change in client side
+      const accessTokenExpTime = "5m"; //* m == minute change m also require in change in client side
       const payload = { role };
       const options = {
         expiresIn: accessTokenExpTime,
@@ -37,7 +37,7 @@ module.exports = {
       if (err) {
         const message =
           err.name === "JsonWebTokenError" ? "Unauthorized" : err.message;
-        return next(createError.Unauthorized(err.message));
+        return next(createError.Unauthorized(err.message,));
       }
       res.payload = payload;
       next();
@@ -47,7 +47,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       const payload = {};
       const options = {
-        expiresIn: "5m", // change this also need to change below redis EX time which is in second
+        expiresIn: "1h", // change this also need to change below redis EX time which is in second
         audience: userId,
       };
 
@@ -61,7 +61,7 @@ module.exports = {
 
         redisClient
           .SET(userId, token, {
-            EX: 60 * 5,
+            EX: 60 * 60,
           })
           .catch((err) => {
             console.log(err.message);
